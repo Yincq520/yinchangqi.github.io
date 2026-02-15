@@ -1,0 +1,340 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+ 
+</head>
+<body>
+<script>
+function clickEffect() {
+  let balls = [];
+  let longPressed = false;
+  let longPress;
+  let multiplier = 0;
+  let width, height;
+  let origin;
+  let normal;
+  let ctx;
+  const colours = ["#F73859", "#14FFEC", "#00E0FF", "#FF99FE", "#FAF15D"];
+  const canvas = document.createElement("canvas");
+  document.body.appendChild(canvas);
+  canvas.setAttribute("style", "width: 100%; height: 100%; top: 0; left: 0; z-index: 99999; position: fixed; pointer-events: none;");
+  const pointer = document.createElement("span");
+  pointer.classList.add("pointer");
+  document.body.appendChild(pointer);
+ 
+  if (canvas.getContext && window.addEventListener) {
+    ctx = canvas.getContext("2d");
+    updateSize();
+    window.addEventListener('resize', updateSize, false);
+    loop();
+    window.addEventListener("mousedown", function(e) {
+      pushBalls(randBetween(10, 20), e.clientX, e.clientY);
+      document.body.classList.add("is-pressed");
+      longPress = setTimeout(function(){
+        document.body.classList.add("is-longpress");
+        longPressed = true;
+      }, 500);
+    }, false);
+    window.addEventListener("mouseup", function(e) {
+      clearInterval(longPress);
+      if (longPressed == true) {
+        document.body.classList.remove("is-longpress");
+        pushBalls(randBetween(50 + Math.ceil(multiplier), 100 + Math.ceil(multiplier)), e.clientX, e.clientY);
+        longPressed = false;
+      }
+      document.body.classList.remove("is-pressed");
+    }, false);
+    window.addEventListener("mousemove", function(e) {
+      let x = e.clientX;
+      let y = e.clientY;
+      pointer.style.top = y + "px";
+      pointer.style.left = x + "px";
+    }, false);
+  } else {
+    console.log("canvas or addEventListener is unsupported!");
+  }
+ 
+ 
+  function updateSize() {
+    canvas.width = window.innerWidth * 2;
+    canvas.height = window.innerHeight * 2;
+    canvas.style.width = window.innerWidth + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(2, 2);
+    width = (canvas.width = window.innerWidth);
+    height = (canvas.height = window.innerHeight);
+    origin = {
+      x: width / 2,
+      y: height / 2
+    };
+    normal = {
+      x: width / 2,
+      y: height / 2
+    };
+  }
+  class Ball {
+    constructor(x = origin.x, y = origin.y) {
+      this.x = x;
+      this.y = y;
+      this.angle = Math.PI * 2 * Math.random();
+      if (longPressed == true) {
+        this.multiplier = randBetween(14 + multiplier, 15 + multiplier);
+      } else {
+        this.multiplier = randBetween(6, 12);
+      }
+      this.vx = (this.multiplier + Math.random() * 0.5) * Math.cos(this.angle);
+      this.vy = (this.multiplier + Math.random() * 0.5) * Math.sin(this.angle);
+      this.r = randBetween(8, 12) + 3 * Math.random();
+      this.color = colours[Math.floor(Math.random() * colours.length)];
+    }
+    update() {
+      this.x += this.vx - normal.x;
+      this.y += this.vy - normal.y;
+      normal.x = -2 / window.innerWidth * Math.sin(this.angle);
+      normal.y = -2 / window.innerHeight * Math.cos(this.angle);
+      this.r -= 0.3;
+      this.vx *= 0.9;
+      this.vy *= 0.9;
+    }
+  }
+ 
+  function pushBalls(count = 1, x = origin.x, y = origin.y) {
+    for (let i = 0; i < count; i++) {
+      balls.push(new Ball(x, y));
+    }
+  }
+ 
+  function randBetween(min, max) {
+    return Math.floor(Math.random() * max) + min;
+  }
+ 
+  function loop() {
+    ctx.fillStyle = "rgba(255, 255, 255, 0)";
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < balls.length; i++) {
+      let b = balls[i];
+      if (b.r < 0) continue;
+      ctx.fillStyle = b.color;
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2, false);
+      ctx.fill();
+      b.update();
+    }
+    if (longPressed == true) {
+      multiplier += 0.2;
+    } else if (!longPressed && multiplier >= 0) {
+      multiplier -= 0.4;
+    }
+    removeBall();
+    requestAnimationFrame(loop);
+  }
+ 
+  function removeBall() {
+    for (let i = 0; i < balls.length; i++) {
+      let b = balls[i];
+      if (b.x + b.r < 0 || b.x - b.r > width || b.y + b.r < 0 || b.y - b.r > height || b.r < 0) {
+        balls.splice(i, 1);
+      }
+    }
+  }
+}
+clickEffect();//调用特效函数
+</script>
+</body>
+</html>
+<html>
+<head>
+</head>
+<body>
+       <!-- 背景音乐核心代码 -->
+    <audio id="bgMusic" src="1.mp3" autoplay loop preload="auto">
+        你的浏览器不支持 audio 标签，请升级浏览器！
+    </audio>
+
+    <script>
+        // 解决部分浏览器禁止自动播放的问题
+        document.addEventListener('click', function() {
+            const audio = document.getElementById('bgMusic');
+            // 如果音频暂停，则触发播放
+            if (audio.paused) {
+                audio.play().catch(err => {
+                    console.log("播放失败：", err);
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>
+<html>
+<head>
+<title>殷昌奇</title>
+<meta charset="UTF-8">
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+/* body 样式 */
+body {
+    font-family: Arial;
+    margin: 0;
+}
+
+/* 标题 */
+.header {
+    padding: 100px;
+    text-align: center;
+	background-image:url(14.jpg);
+  background-position:1400px 550px;
+    color: white;
+}
+
+/* 标题字体加大 */
+.header h1 {
+    font-size: 40px;
+}
+
+/* 导航 */
+.navbar {
+    overflow: hidden;
+    background-color: #E2A76F;
+}
+
+/* 导航栏样式 */
+.navbar a {
+    float: left;
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+}
+
+/* 右侧链接*/
+.navbar a.right {
+    float: right;
+}
+
+/* 鼠标移动到链接的颜色 */
+.navbar a:hover {
+    background-color: #ddd;
+    color: black;
+}
+
+/* 列容器 */
+.row {  
+    display: -ms-flexbox; /* IE10 */
+    display: flex;
+    -ms-flex-wrap: wrap; /* IE10 */
+    flex-wrap: wrap;
+}
+
+/* 创建两个列 */
+/* 边栏 */
+.side {
+    -ms-flex: 20%; /* IE10 */
+    flex: 20%;
+    background-color: #f1f1f1;
+    padding: 30px;
+}
+
+/* 主要的内容区域 */
+.main {   
+    -ms-flex: 60%; /* IE10 */
+    flex: 70%;
+    background-color: white;
+    padding: 25px;
+}
+
+/* 测试图片 */
+.fakeimg {
+    background-color: #aaa;
+    width: 100%;
+    padding:19px;
+}
+
+/* 底部 */
+.footer {
+    padding: 20px;
+    text-align: center;
+    background: #ddd;
+}
+
+/* 响应式布局 - 在屏幕设备宽度尺寸小于 700px 时, 让两栏上下堆叠显示 */
+@media screen and (max-width: 700px) {
+    .row {   
+        flex-direction: column;
+    }
+}
+
+/* 响应式布局 - 在屏幕设备宽度尺寸小于 400px 时, 让导航栏目上下堆叠显示 */
+@media screen and (max-width: 400px) {
+    .navbar a {
+        float: none;
+        width: 100%;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>阳阳的vlog</h1>
+  <p>欢迎！</p>
+</div>
+
+<div class="navbar">
+  <a href="https://www.cnki.net/">学知识</a>
+  <a href="https://www.bilibili.com/">想娱乐</a>
+  <a href="https://www.pptsupermarket.com/">办办公</a>
+ <a href="https://www.jscn.edu.cn/index.htm"class="right">医院官网</a></strong>.</p>
+</div>
+
+<div class="row">
+  <div class="side">
+      <h2>关于我</h2>
+      <h5>我的照片:</h5>
+      <div class="fakeimg" style="height:400px;"><img src="206.jpg"
+	   width="340" height="360"/></div>
+      <a>姓名：殷昌奇</a>
+	  <p>性别：男</p>
+	  <p>职务：编码员</p>
+	  
+      <h3>兴趣爱好</h3>
+      <p>了解我更多</p>
+      <div class="fakeimg" style="height:180px;"><h5>1.编程：<a><img src="11.jpg" width="260" height="110"/></a></h5></div>
+	  <br>
+      <div class="fakeimg" style="height:180px;"><h5>2.听歌：<a><img src="12.jpg" width="260" height="110"/></a></h5></div>
+	  <br>
+       <div class="fakeimg" style="height:180px;"><h5>3.动漫：<a><img src="13.jpg" width="260" height="110"/></a></h5></div>
+  </div>
+  <div class="main">
+      <h2>阳阳的科室</h2>
+      <h5>科室合照</h5>
+      <div class="fakeimg" style="height:340px;"><a><img src="9.jpg"
+	   width="450" height="300"/></a><a></a>⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭.<a> <img src="10.jpg"
+	   width="450" height="300"/>    </a><a></a>⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭⁭.<a> <img src="15.jpg"
+	   width="400" height="300"/>    </a></div>
+      <p>班级定位：团结、奋进、热情、创新</p>
+
+      <p>成员定位：追求卓越、团结奋进</p>
+
+      <p>四自定位：严以治学、实以求真、诚以立身、勇以遂志</p>
+      <br>
+      <h2>生活片段</h2>
+      <h5>vloge</h5>
+      <div class="fakeimg" style="height:540px;"><embed src="1.mp4"width="315"height="500"volume="0"autostart="false"><a>----</a><a><embed src="2.mp4"width="315"height="500"volume="0"autostart="false"></a><a>----</a><a><embed src="3.mp4"width="316"height="500"volume="0"autostart="false"></a></div>
+      <p>快乐之道不只在于做自己喜爱的事,更在于喜爱自己不得不做的事。——巴里</p>
+  </div>
+</div>
+
+<div class="footer">
+  <h2>医务科殷昌奇</h2>
+</div>
+
+  
+</body>
+</html>
